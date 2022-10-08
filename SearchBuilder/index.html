@@ -7,9 +7,13 @@
     <meta name="description" content="Select files by filename in Windows Explorer">
 </head>
 <body>
-    <p>Instructions: Paste newline-separated filenames from <a href="https://zznidar.github.io/tools/Filenames/" target="_blank">Filenames</a> tool as well as the path to your folder with files. Press "Generate", then open the generated search file in your Downloads folder. You can now easily select just the files you wanted :)</p>
-    <input type="text" id="inputFolder" placeholder="Folder path" style="width: 100%;">
-    <textarea id="inputArea" placeholder="Paste newline-separated filenames here" style="width: 100%; height: 60vh;"></textarea>
+    <p>Instructions: Paste newline-separated filenames (from <a href="https://zznidar.github.io/tools/Filenames/" target="_blank">Filenames</a> tool) as well as the path to your folder with files. Press "Generate", then open the generated search file in your Downloads folder. You can now easily select just the files you wanted :)</p>
+    <input type="text" id="inputFolder" placeholder="Folder path: C:\temp\FolderWithYourFiles" style="width: 100%;">
+    <textarea id="inputArea" placeholder="Paste newline-separated filenames here:
+    IMG_123.jpg
+    IMG_124.jpg
+    IMG_998752.jpg
+    ..." style="width: 100%; height: 60vh;"></textarea>
     <input type="button" value="Generate" onclick="parse()">
 
     <script src="index.js"></script>
