@@ -31,6 +31,7 @@ async function loadPdb(file) {
             console.log(line);
         }
         if(linesToBeSkipped.some((skip) => line.startsWith(skip))) continue;
+        if(line.startsWith('TER')) offset = 0; // very inaccurate, but sufficient for my current use-case
         out += line + '\n';
     }
     download(`${file.name.split(".")[0]}_rac.pdb` , out);
