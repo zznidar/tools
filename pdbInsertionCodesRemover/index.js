@@ -52,3 +52,5 @@ function download(filename, text) {
   
     document.body.removeChild(element);
   }
+
+// PDB specification reference: https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/pdbintro.html

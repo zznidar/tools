@@ -4,12 +4,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>PDB Insertion Codes Remover</title>
 </head>
 <body>
+    <h1>PDB Insertion Codes Remover</h1>
+    <p>This tool renumbers your residues if they contain <a href="https://proteopedia.org/wiki/index.php/Unusual_sequence_numbering#Insertion_Codes">insertion codes</a>.</p>
     <p>Please note that it completely messes up with any sheets, helices, disulphide bonds and similar remarks. Therefore, they are removed from the output .pdb altogether.</p>
     <input type="file" id="filePicker" accept="*.pdb">
-    
+
+    <p>Select a .pdb file, conversion will happen automatically and download will be initiated.</p>
+
+    <br><br>
+    <p>If you wish to fill in missing gaps, check out the <a href="https://zznidar.github.io/tools/pdbMissingResidsContigMaker/">PDB Missing Residues Contig Maker</a> tool.</p>
+
     <script src="index.js"></script>
 </body>
 </html>

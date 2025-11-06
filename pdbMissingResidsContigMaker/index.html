@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contig maker for missing residues</title>
+</head>
+<body>
+    <h1>pdb Missing Residues Contig Maker</h1>
+    <p>This tool checks the PDB for missing residues, then outputs a contig you can use in Prosculpt. For example: if your .PDB is missing residues 6 and 7, this tool will output something like [A1-5/2/A8-99]. This way, you can avoid the <i>AssertionError: ('A', 6) is not in pdb file!</i></p>
+    <p>Always double-check your desired hotspots are not missing and/or affected by inpainted residues!</p>
+    <input type="file" id="filePicker" accept="*.pdb">
+
+    <p id="outputText" style="background-color: lightblue; padding: 1rem">Output will be shown here. Copy only relevant parts.</p>
+
+    <br>
+    <p>Note: If your .pdb contains insertion codes, use <a href="https://zznidar.github.io/tools/pdbInsertionCodesRemover/">PDB Insertion Codes Remover</a> first to renumber your residues. Do note that residue numbers might change after that -- always observe your structure.</p>
+    
+    <script src="index.js"></script>
+</body>
+</html>
