@@ -3,10 +3,14 @@ const linesToBeSkipped = ["CONECT", "HELIX", "SHEET", "SSBOND"];
 
 filePicker = document.getElementById('filePicker');
 
-loadPdb(filePicker.files[0]);
+//loadPdb(filePicker.files[0]);
+
+function begin() {
+    loadPdb(filePicker.files[0]);
+}
 
 filePicker.addEventListener('change', function(e) {
-    loadPdb(e.target.files[0]);
+    //loadPdb(e.target.files[0]);
 });
 
 async function loadPdb(file) {
@@ -22,6 +26,8 @@ async function loadPdb(file) {
     lastChain = "";
     contigOutput = "";
 
+    hotspotInput = document.getElementById("hotspotInput").value.split(","); // e.g. B435,B431,B876
+
     starts = []; // Contains resid numbers where a section starts
     ends = []; // Contains resid numbers where sections end
 
@@ -29,7 +35,7 @@ async function loadPdb(file) {
         if(line.startsWith('ATOM') || "Only use atoms, ignore heteroatoms" === false) {
             resid = parseInt(line.substr(22, 4));
             //icode = line.substr(26, 1);
-            console.log(resid)
+            //console.log(resid)
             if(resid !== lastResid && resid !== lastResid+1 || ("Ignore insertion codes. If they are present, user should use the other tool first to renumber them." === false)) {
                 // We should end previous section.
                 ends.push(lastResid);
@@ -41,15 +47,21 @@ async function loadPdb(file) {
                 starts.push(`${chain}${resid}`);
                 contigOutput += `${chain}${resid}-`;
 
-
+                offset += (resid - (lastResid?.replace?.("[", 0) ?? lastResid) - 1);
 
                 //lastIcode = icode;
                 //if(icode !== " ") offset++;
             }        
             lastResid = resid;
             lastChain = chain;
-            //line = `${line.substr(0, 22)}${`${(resid + offset)}`.padStart(4, " ")}${" "}${line.substr(27)}`;
+            //console.log(`resid: ${resid}, lastResid: ${lastResid?.replace?.("[", 0) ?? lastResid}, offset: ${offset}`);
+            line = `${line.substr(0, 22)}${`${(resid - offset)}`.padStart(4, " ")}${" "}${line.substr(27)}`;
             //console.log(line);
+
+            if(hotspotInput.includes(`${chain}${resid}`)) {
+                console.log(`Hotspot found: ${chain}${resid}, renumbered to ${chain}${resid - offset}`);
+                hotspotInput[hotspotInput.indexOf(`${chain}${resid}`)] = `${chain}${resid - offset}`;
+            }
         }
         if(linesToBeSkipped.some((skip) => line.startsWith(skip))) continue;
         if(line.startsWith('TER')) offset = 0; // very inaccurate, but sufficient for my current use-case
@@ -59,12 +71,17 @@ async function loadPdb(file) {
     console.log("Contig output:", contigOutput);
     document.getElementById("outputText").innerText += `\n\n${contigOutput}`;
 
-
+    document.getElementById("hotspotOutput").innerText += `\n\n${hotspotInput.join(", ")}`;
 
     out = out.replaceAll("\n\n", "\n");
     //download(`${file.name.split(".")[0]}_rac.pdb` , out);
+    document.getElementById("downloadButton").disabled = false;
 
     // Now generate contig
+}
+
+function downloadRenumbered() {
+    download(`${filePicker.files[0].name.split(".")[0]}_renumbered.pdb` , out);
 }
 
 

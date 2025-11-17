@@ -10,13 +10,21 @@
     <h1>pdb Missing Residues Contig Maker</h1>
     <p>This tool checks the PDB for missing residues, then outputs a contig you can use in Prosculpt. For example: if your .PDB is missing residues 6 and 7, this tool will output something like [A1-5/2/A8-99]. This way, you can avoid the <i>AssertionError: ('A', 6) is not in pdb file!</i></p>
     <p>Always double-check your desired hotspots are not missing and/or affected by inpainted residues!</p>
-    <input type="file" id="filePicker" accept="*.pdb">
+    <input type="file" id="filePicker" accept="*.pdb"> <button onclick="begin()">Create the contig</button>
 
     <p id="outputText" style="background-color: lightblue; padding: 1rem">Output will be shown here. Copy only relevant parts.</p>
 
     <br>
     <p>Note: If your .pdb contains insertion codes, use <a href="https://zznidar.github.io/tools/pdbInsertionCodesRemover/">PDB Insertion Codes Remover</a> first to renumber your residues. Do note that residue numbers might change after that -- always observe your structure.</p>
-    
+
+    <h2>pdb Missing Residue numbers renumberer</h2>
+    <p>Some .pdb files have just the opposite of insertion codes: missing residue numbers. This causes numerous problems when designing them even if you use the contig maker above. Namely, .a3m allignments will become out of bounds. </p>
+    <p>To fix that, enter your binder hotspots below (they will be renumbered accordingly)</p>
+    <input type="text" id="hotspotInput" placeholder="B435,B431,B876"> <button onclick="begin()">Renumber residues, using the same .pdb above</button>
+
+    <p id="hotspotOutput" style="background-color: lightgreen; padding: 1rem">Renumbered hotspots will be shown here.</p>
+    <button id="downloadButton" disabled="" onclick="downloadRenumbered()">Click here to download a renumbered .pdb</button>
+
     <script src="index.js"></script>
 </body>
 </html>
