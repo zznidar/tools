@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AktaExtractor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f4f4f4;
+        }
+
+        pre {
+            margin-top: 16px;
+            padding: 12px;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            overflow: auto;
+        }
+
+        .table-controls {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        footer {
+            color: gray;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>AktaExtractor</h1>
+    <p>This tool extracts measured protein concentrations from your Cytiva Unicorn program for your Äkta SEC. Usage:</p>
+    <ol>
+        <li>When viewing results in Unicorn, select your wanted peak and enter its extinction coefficient</li>
+        <li>Close and save the result</li>
+        <li>Select all your results -> right-click -> Export. This will create a bunch of .zip files.</li>
+        <li>Upload these .zip files here. You will get an output table which you can copy and paste into your spreadsheet.
+            <ul>
+                <li>label: The name of your sample before the brackets</li>
+                <li>ExtCoeff: The extinction coefficient you entered in step 1</li>
+                <li>ExtCoeffAmount [mg]: The mass of protein in the peak</li>
+                <li>ExtCoeffConc [mg/mL]: The concentration of protein in the peak</li>
+            </ul>
+        </li>
+        <li>You can switch between decimal point and decimal comma as the decimal separator, to meet the needs of your spreadsheet's language.</li>
+    </ol>
+    <input id="filePicker" type="file" accept=".zip" multiple />
+    <div class="table-controls">
+        <label>
+            <input id="decimalSeparatorToggle" type="checkbox" />
+            Use decimal comma
+        </label>
+    </div>
+    <div id="tableContainer"></div>
+    <div class="table-controls">
+        <button id="downloadCsvBtn" type="button" disabled>Download .csv</button>
+    </div>
+    <pre id="results"></pre>
+    <footer>
+        <p>Reference link to <a href="https://zznidar.github.io/tools/">all tools</a></p>
+    </footer>
+    <script src="zip.min.js"></script> <!-- https://github.com/gildas-lormeau/zip.js/ -->
+    <script src="extractor.js"></script>
+</body>
+</html>
