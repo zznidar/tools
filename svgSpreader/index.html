@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Razporejevalnik SVG-jev</title>
+    <meta name="description" content="A simple SVG file viewer and text replacer.">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #svgContainer {
+            display: flex;
+            flex-wrap: wrap;
+/*             gap: 10px; */
+            margin-top: 20px;
+        }
+        #svgContainer div {
+/*             padding: 10px; */
+/*             border: 1px solid #ccc;
+            width: 200px;
+            height: 200px;
+            overflow: auto; */
+        }
+        .selected { background-color: lightblue; filter: invert(1); }
+        .modified { filter: hue-rotate(270deg) saturate(70%);}
+    </style>
+</head>
+<body>
+    <p>Levi klik za zamenjavo vrstnega reda (vrine prvo sliko pred drugo). Desni klik za spremembo barve. Ctrl + Shift + S (Firefox) za zajem elementa. Resolucija je odvisna od nivoja povečave (Ctrl + +)</p>
+    <input type="file" id="fileInput" accept=".svg" multiple>
+    <input type="button" value="Zamenjaj besedilo" onclick="replaceText()" title="Zamenja naslove osi grafov masne fotometrije v slovenščino. Glej izvorno kodo za seznam zamenjav.">
+    <input type="button" value="Odstrani naslove" onclick="removeTitles()" title="Odstrani naslove grafov masne fotometrije.">
+    <input type="button" value="Obreži širino" onclick="cropWidth()" title="Obreže širino grafov masne fotometrije na 335&nbsp;px.">
+    <input type="button" value="Povečaj besedilo" onclick="makeAllTextLarger()" title="Poveča velikost besedila v grafih masne fotometrije. Glej izvorno kodo za seznam zamenjav.">
+    <div id="svgContainer"></div>
+
+
+    <script>
+        const textReplaceTable = {
+            "Normalised counts": "normaliziran signal",
+            "Mass [kDa]": "masa [kDa]",
+            "Counts": "signal"
+        }
+
+        const fuzzyTextReplaceTable = {
+            "%": " %",
+            //"counts": "[brez enote]"
+        };
+
+        function replaceText() {
+            svgContainer.querySelectorAll('text').forEach(textElement => {
+                let originalText = textElement.textContent;
+                if (textReplaceTable[originalText]) {
+                    textElement.textContent = textReplaceTable[originalText];
+                }
+                for (const [key, value] of Object.entries(fuzzyTextReplaceTable)) {
+                    if (originalText.includes(key)) {
+                        textElement.textContent = originalText = originalText.replace(key, value);
+                    }
+                }
+            });
+        }
+
+        function removeTitles() {
+            svgContainer.querySelectorAll("text[style=\"font: 20px 'Calibri'; text-anchor: middle\"]").forEach(titleElement => {
+                titleElement.remove();
+            });
+        }
+
+        function cropWidth(newWidth=335) {
+            svgContainer.querySelectorAll("svg").forEach(svgElement => {
+                svgElement.attributes.width.value = svgElement.attributes.width.value.replace(360, newWidth);
+                svgElement.attributes.viewBox.value = svgElement.attributes.viewBox.value.replace(360, newWidth);
+            })
+        }
+
+        const textSizesToGetLargerReplaceTable = {
+            "7": "10.5",
+            "8": "11.2",
+            "10": "11.5",
+        }
+
+        function makeAllTextLarger() {
+            svgContainer.querySelectorAll("text").forEach(textElement => {
+                const currentFontSize = parseFloat(textElement.style.fontSize);
+                if (textSizesToGetLargerReplaceTable[currentFontSize]) {
+                    textElement.style.fontSize = textSizesToGetLargerReplaceTable[currentFontSize] + "px";
+                }
+            });
+        }
+
+
+        // Modified from https://github.com/zznidar/video-collage-projectfile-maker/blob/master/ui.js#L40-L54
+        toSwap = [];
+        function swapping(tile) {
+            tile.classList.toggle("selected");
+            toSwap.push(tile); // Because we only have 2 elements in array, we can always push. If user deselects, simply recalculate the same with no difference. 
+
+            if(toSwap.length == 2) {
+                swap(...toSwap);
+                toSwap = [];
+            }
+        }
+        function swap(first, second) {
+            console.log("swapping ", first, second);
+            first.parentNode.insertBefore(first, second);
+            first.classList.remove("selected");
+            second.classList.remove("selected");
+        }
+
+
+
+        const fileInput = document.getElementById('fileInput');
+        const svgContainer = document.getElementById('svgContainer');
+
+        fileInput.addEventListener('change', handleFiles);
+
+        function handleFiles(event) {
+            const files = event?.target?.files ?? fileInput.files;
+            svgContainer.innerHTML = ''; // Clear previous SVGs
+
+            Array.from(files).forEach(file => {
+                if (file.type === 'image/svg+xml') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const svgContent = e.target.result;
+                        const svgElement = document.createElement('div');
+                        svgElement.innerHTML = svgContent;
+                        svgElement.setAttribute("onclick", "swapping(this)");
+                        svgElement.setAttribute("oncontextmenu", "this.classList.toggle('modified')");
+                        svgContainer.appendChild(svgElement);
+                    };
+                    reader.readAsText(file);
+                } else {
+                    alert(`${file.name} is not an SVG file.`);
+                }
+            });
+            replaceText();
+        }
+
+        handleFiles();
+    </script>
+</body>
+</html>
