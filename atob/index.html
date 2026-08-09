@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>atob splitter</title>
+</head>
+<body>
+    <h1>atob splitter</h1>
+    <p>This tool calls `atob()` on your input. Beforehand, it replaces "_" with "/" and "-" with "+". Furthermore, it splits the input by "." and outputs all the results.</p>
+
+    <textarea type="text" id="input" placeholder="Enter your input here" style="width: 100%; padding: 10px; margin-bottom: 10px;" rows="10"></textarea>
+    <button id="decodeButton" style="padding: 10px 20px;">Decode</button>
+    <div id="output" style="margin-top: 20px;"></div>
+
+    <script>
+        document.getElementById('decodeButton').addEventListener('click', decode);
+        document.getElementById('input').addEventListener('input', decode);
+        function decode() {
+            const input = document.getElementById('input').value;
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = ''; // Clear previous output
+
+            if (!input) {
+                outputDiv.innerHTML = '<p style="color: red;">Please enter a valid input.</p>';
+                return;
+            }
+
+            const parts = input.split('.');
+            parts.forEach((part, index) => {
+                try {
+                    const modifiedPart = part.replaceAll("_", "/").replaceAll("-", "+");
+                    const decoded = atob(modifiedPart);
+                    const resultElement = document.createElement('p');
+                    resultElement.textContent = `${decoded}`;
+                    outputDiv.appendChild(resultElement);
+                } catch (error) {
+                    const errorElement = document.createElement('p');
+                    errorElement.style.color = 'red';
+                    errorElement.textContent = `Error decoding part ${index + 1}: ${error.message}`;
+                    outputDiv.appendChild(errorElement);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
