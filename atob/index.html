@@ -4,18 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>atob splitter</title>
+    <style>
+        textarea {
+            width: calc(100% - 2 * 13px);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        p {
+            overflow-wrap: break-word;
+        }
+    </style>
 </head>
 <body>
     <h1>atob splitter</h1>
     <p>This tool calls `atob()` on your input. Beforehand, it replaces "_" with "/" and "-" with "+". Furthermore, it splits the input by "." and outputs all the results.</p>
 
-    <textarea type="text" id="input" placeholder="Enter your input here" style="width: 100%; padding: 10px; margin-bottom: 10px;" rows="10"></textarea>
+    <textarea type="text" id="input" placeholder="Enter your input here" rows="10"></textarea>
     <button id="decodeButton" style="padding: 10px 20px;">Decode</button>
     <div id="output" style="margin-top: 20px;"></div>
+    
+    <textarea id="length" placeholder="Get the length of this text" rows="5"></textarea>
+    <p id="lengthOutput"></p>
+    <textarea id="URIdecoder" placeholder="Decode URI components here" rows="5"></textarea>
+    <p id="URIoutput1"></p>
+    <p id="URIoutput2"></p>
 
     <script>
         document.getElementById('decodeButton').addEventListener('click', decode);
         document.getElementById('input').addEventListener('input', decode);
+        document.getElementById('length').addEventListener('input', updateLength);
+        document.getElementById('URIdecoder').addEventListener('input', updateURIOutput);
         function decode() {
             const input = document.getElementById('input').value;
             const outputDiv = document.getElementById('output');
@@ -42,6 +60,26 @@
                 }
             });
         }
+
+        function updateLength() {
+            const lengthInput = document.getElementById('length').value;
+            const lengthOutput = document.getElementById('lengthOutput');
+            lengthOutput.textContent = `Length: ${lengthInput.length}`;
+        }
+
+        function updateURIOutput() {
+            const URIInput = document.getElementById('URIdecoder').value;
+            const URIOutput1 = document.getElementById('URIoutput1');
+            const URIOutput2 = document.getElementById('URIoutput2');
+            URIOutput1.textContent = decodeURIComponent(URIInput);
+            URIOutput2.textContent = decodeURI(URIInput);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            decode();
+            updateLength();
+            updateURIOutput();
+        });
     </script>
 </body>
 </html>
