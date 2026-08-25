@@ -29,11 +29,15 @@
     <p id="URIoutput1"></p>
     <p id="URIoutput2"></p>
 
+    <input type="text" id="timestampInput" placeholder="Enter timestamp">
+    <p id="timestampOutput"></p>
+
     <script>
         document.getElementById('decodeButton').addEventListener('click', decode);
         document.getElementById('input').addEventListener('input', decode);
         document.getElementById('length').addEventListener('input', updateLength);
         document.getElementById('URIdecoder').addEventListener('input', updateURIOutput);
+        document.getElementById('timestampInput').addEventListener('input', updateTimestampOutput);
         function decode() {
             const input = document.getElementById('input').value;
             const outputDiv = document.getElementById('output');
@@ -79,7 +83,14 @@
             decode();
             updateLength();
             updateURIOutput();
+            updateTimestampOutput();
         });
+
+        function updateTimestampOutput() {
+            const timestampInput = document.getElementById('timestampInput').value;
+            const timestampOutput = document.getElementById('timestampOutput');
+            timestampOutput.textContent = `${new Date(Number(timestampInput.padEnd(13, "0")))}`;
+        }
     </script>
 </body>
 </html>
