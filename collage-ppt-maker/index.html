@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collage PPT maker</title>
+    <style>
+        :root {
+            --panel: rgba(255, 255, 255, 0.88);
+            --panel-border: rgba(76, 54, 29, 0.16);
+            --text: #23180f;
+            --muted: #6b5a49;
+            --accent: #7a4d1d;
+            --accent-2: #b66a22;
+            --tile-border: rgba(35, 24, 15, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Georgia, "Times New Roman", serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.85), transparent 35%),
+                radial-gradient(circle at right center, rgba(182, 106, 34, 0.18), transparent 30%),
+                linear-gradient(135deg, #f7f0e5 0%, #efe1cf 50%, #e6d2b7 100%);
+        }
+
+        main {
+            /* max-width: 1440px;
+            margin: 0 auto; */
+            padding: 1rem 0.5rem 2rem;
+        }
+
+        .hero {
+            display: grid;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 3.6rem);
+            letter-spacing: -0.04em;
+            line-height: 1;
+        }
+
+        .lead {
+            margin: 0;
+            max-width: 70ch;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .shell {
+            display: grid;
+            gap: 18px;
+            grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            box-shadow: 0 22px 55px rgba(77, 51, 21, 0.12);
+            /* backdrop-filter: blur(10px); */
+            max-width: calc(100vw - 2rem); /* would be - 1rem, but scrollbars are not subrtacted from 100vw, hence useless left-right scrolling */
+        }
+
+        .controls {
+            padding: 18px;
+            display: grid;
+            gap: 16px;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field label {
+            font-size: 0.92rem;
+            color: var(--muted);
+        }
+
+        .field input[type="number"],
+        .field input[type="file"] {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(122, 77, 29, 0.2);
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text);
+            font: inherit;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            appearance: none;
+            border: 0;
+            border-radius: 999px;
+            padding: 11px 16px;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+        }
+
+        .primary {
+            color: #fff7ef;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 12px 24px rgba(122, 77, 29, 0.24);
+        }
+
+        .secondary {
+            color: var(--accent);
+            background: rgba(122, 77, 29, 0.1);
+        }
+
+        .hint {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+
+        .status {
+            min-height: 1.2em;
+            color: var(--accent);
+            font-size: 0.95rem;
+        }
+
+        .preview-shell {
+            overflow: auto;
+            padding: 18px;
+        }
+
+        .preview-viewport {
+            position: relative;
+            transform-origin: top left;
+        }
+
+        .preview {
+            position: relative;
+            overflow: hidden;
+            /* border-radius: 16px; */
+            border: 1px solid rgba(35, 24, 15, 0.14);
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.38)),
+                repeating-linear-gradient(45deg, rgba(122, 77, 29, 0.04) 0 10px, rgba(255, 255, 255, 0.02) 10px 20px);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+            width: 100%;
+            height: 100%;
+        }
+
+        .tile {
+            position: absolute;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 0;
+            background: #fff;
+            box-shadow: 0 10px 24px rgba(35, 24, 15, 0.18);
+            padding: 0;
+            text-align: left;
+        }
+
+        .tile.selected {
+            border-color: rgba(122, 77, 29, 0.92);
+            box-shadow: 0 0 0 4px rgba(182, 106, 34, 0.18), 0 10px 24px rgba(35, 24, 15, 0.18);
+        }
+
+        .tile img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .tile-label {
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(21, 14, 9, 0.68);
+            color: #fff;
+            font-size: 12px;
+            line-height: 1.2;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        footer {
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        @media (max-width: 980px) {
+            .shell {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="hero">
+            <h1>Collage PPT maker</h1>
+            <p class="lead">Add all your pictures to slide 1 of your PowerPoint presentation (they can be positioned anywhere and even overlap, and of any size). Upload the file here to create a collage.</p>
+        </div>
+
+        <div class="shell">
+            <section class="panel controls">
+                <div class="field">
+                    <label for="filePicker">Choose a `.pptx` file</label>
+                    <input id="filePicker" type="file" accept=".pptx" />
+                </div>
+
+                <div class="field">
+                    <label for="rowsSetting">How many rows should the collage use? Set 0 for auto</label>
+                    <input id="rowsSetting" type="number" min="0" value="0" />
+                </div>
+
+                <div class="field">
+                    <label>
+                        <input id="roundedCornersToggle" type="checkbox" />
+                        Rounded corners
+                    </label>
+                </div>
+
+                <div class="field">
+                    <label for="cornerRadiusSlider">Corner radius value</label>
+                    <input id="cornerRadiusSlider" type="range" min="0" max="50000" step="1" value="2881" />
+                    <div id="cornerRadiusValue" class="hint">2.8 %</div>
+                </div>
+
+                <div class="field">
+                    <label for="tileSpacingSlider">Tile spacing</label>
+                    <input id="tileSpacingSlider" type="range" min="0" max="100" step="1" value="8" />
+                    <div id="tileSpacingValue" class="hint">8 px</div>
+                </div>
+
+                <div class="actions">
+                    <button id="shuffleBtn" class="secondary" type="button" disabled>Shuffle pictures</button>
+                    <button id="downloadBtn" class="primary" type="button" disabled>Download updated `.pptx`</button>
+                </div>
+
+                <p class="hint">Click two tiles in the preview to swap them. The first slide is used as the source, and its picture positions are rewritten before the file is packed again.</p>
+                <div id="status" class="status"></div>
+            </section>
+
+            <!-- <section class="panel preview-shell"> -->
+                <div id="previewViewport" class="preview-viewport">
+                    <div id="preview" class="preview"></div>
+                </div>
+            <!-- </section> -->
+        </div>
+
+        <footer>
+            All processing happens locally in your browser.
+        </footer>
+
+        <footer>
+            <p>Check out this project on <a href="https://github.com/zznidar/tools/tree/master/collage-ppt-maker">GitHub</a>!</p>
+        </footer>
+    </main>
+
+    <script src="../AktaExtractor/zip.min.js"></script>
+    <script src="pptx-maker.js"></script>
+</body>
+</html>
