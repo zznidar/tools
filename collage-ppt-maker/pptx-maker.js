@@ -119,10 +119,10 @@ function resetState(clearStatus = true) {
     state.items = [];
     state.selectedIndex = null;
     preview.innerHTML = "";
-    preview.style.width = "0px";
+/*     preview.style.width = "0px";
     preview.style.height = "0px";
     preview.style.transform = "scale(1, 1)";
-    updateCornerUi();
+ */    updateCornerUi();
     if (clearStatus) {
         setStatus("");
     }
@@ -509,9 +509,9 @@ function linearPartition(seq, partitions) {
 function renderPreview() {
     if (!state.items.length) {
         preview.innerHTML = "";
-        preview.style.width = "0px";
+/*         preview.style.width = "0px";
         preview.style.height = "0px";
-        resizePreview();
+ */        resizePreview();
         return;
     }
 
@@ -519,18 +519,25 @@ function renderPreview() {
     const layout = makeLayout(state.items, rows, state.slideWidthPx, state.slideHeightPx, getTileSpacingPx());
 
     preview.innerHTML = "";
-    preview.style.width = state.slideWidthPx + "px";
-    preview.style.height = state.slideHeightPx + "px";
-
+    /*     preview.style.width = state.slideWidthPx + "px";
+        preview.style.height = state.slideHeightPx + "px";
+ */ 
+    resizePreview();
     layout.forEach(function (entry, index) {
         const tile = document.createElement("button");
         tile.type = "button";
         tile.className = "tile";
-        tile.style.borderRadius = getTileRadiusPx(entry.width, entry.height) + "px";
-        tile.style.left = entry.x + "px";
+/*         tile.style.borderRadius = getTileRadiusPx(entry.width, entry.height) + "px";
+ *//*         tile.style.left = entry.x + "px";
         tile.style.top = entry.y + "px";
-        tile.style.width = entry.width + "px";
+ *//*         tile.style.width = entry.width + "px";
         tile.style.height = entry.height + "px";
+ */
+        tile.style.setProperty("--tileW", entry.width);
+        tile.style.setProperty("--tileH", entry.height);
+        tile.style.setProperty("--tileL", entry.x);
+        tile.style.setProperty("--tileT", entry.y);
+        document.documentElement.style.setProperty("--R", cornerRadiusSlider.value/50000);
         tile.style.zIndex = String(index + 1);
         if (index === state.selectedIndex) {
             tile.classList.add("selected");
@@ -593,15 +600,19 @@ function resizePreview() {
     const width = state.slideWidthPx || 1;
     const height = state.slideHeightPx || 1;
 
-    previewViewport.style.width = width + "px";
-    previewViewport.style.height = height + "px";
+/*     previewViewport.style.width = width + "px";
+    previewViewport.style.height = height + "px"; */
+
+    // set the root variable --W to width
+    document.documentElement.style.setProperty("--W", width);
+    document.documentElement.style.setProperty("--H", height);
 
     const availableWidth = Math.max(320, document.documentElement.clientWidth - 80);
     const availableHeight = Math.max(300, document.documentElement.clientHeight - 260);
     const scale = Math.min(1, availableWidth / width, availableHeight / height) * 0.96;
 
-    previewViewport.style.transform = "scale(" + scale + ", " + scale + ")";
-}
+/*     previewViewport.style.transform = "scale(" + scale + ", " + scale + ")";
+ */}
 
 function updateCornerUi() {
     cornerRadiusValue.textContent = `${(cornerRadiusSlider.value / 100_000 * 100).toFixed(2)} %`;
