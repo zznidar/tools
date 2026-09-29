@@ -64,7 +64,13 @@ async function loadPdb(file) {
             }
         }
         if(linesToBeSkipped.some((skip) => line.startsWith(skip))) continue;
-        if(line.startsWith('TER')) offset = 0; // very inaccurate, but sufficient for my current use-case
+        if(line.startsWith('TER')) {
+            offset = 0; // very inaccurate, but sufficient for my current use-case
+            if(document.getElementById("startWithOne").checked) {
+                lastResid = "[";
+                contigOutput = "Contig output not available when starting each chain with resid=1. Please uncheck the option and try again.";
+            }
+        }
         out += line + '\n';
     }
     contigOutput += `${resid}]`; // Add the last residue to the contig

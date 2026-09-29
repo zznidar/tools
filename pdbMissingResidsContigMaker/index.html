@@ -19,6 +19,7 @@
 
     <h2>pdb Missing Residue numbers renumberer</h2>
     <p>Some .pdb files have just the opposite of insertion codes: missing residue numbers. This causes numerous problems when designing them even if you use the contig maker above. Namely, .a3m allignments will become out of bounds. </p>
+    <input type="checkbox" id="startWithOne"><label for="startWithOne">Start each chain with resid=1 (there must be a "TER" at every chain break for this to work) <- useful for preparing BoltzGen input files</label>
     <p>To fix that, enter your binder hotspots below (they will be renumbered accordingly)</p>
     <input type="text" id="hotspotInput" placeholder="B435,B431,B876"> <button onclick="begin()">Renumber residues, using the same .pdb above</button>
 
