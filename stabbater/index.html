@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stab.bat Video Frame Selector</title>
+    <style>
+        :root {
+            --border-color: #000;
+        }
+        #videoContainer {
+            position: relative;
+            display: none;
+            max-width: 90vw;
+            max-height: 70vh;
+        }
+
+        #videoPlayer {
+            display: block;
+            max-width: 90vw;
+            max-height: 70vh;
+        }
+
+        #frameOverlay {
+            position: absolute;
+            border: 2px solid var(--border-color);
+            box-sizing: border-box;
+            pointer-events: none;
+            display: none;
+            background: transparent;
+        }
+
+        label {
+            display: block;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Frame Selector for stab.bat video stabilisation script</h1>
+    <p>Use this tool to find perfect zoom and ratio settings for your video. Then pass the arguments to the <a href="https://github.com/zznidar/Zutilities/blob/main/stab.bat">stab.bat</a> script.</p>
+
+    <input type="file" id="fileInput" accept="video/*">
+    <div id="videoContainer">
+        <video id="videoPlayer" controls></video>
+        <div id="frameOverlay"></div>
+    </div>
+
+    <label>
+        Zoom
+        <input type="range" id="zoomSlider" min="1" max="3" step="0.01" value="1.25">
+        <input type="text" id="zoomInput" value="1.25">
+    </label>
+
+    <label>
+        RatioY
+        <input type="range" id="ratioYSlider" min="0" max="1" step="0.01" value="0.75">
+        <input type="text" id="ratioYInput" value="0.75">
+    </label>
+
+    <label>
+        RatioX
+        <input type="range" id="ratioXSlider" min="0" max="1" step="0.01" value="0">
+        <input type="text" id="ratioXInput" value="0">
+    </label>
+
+    <label>
+        skip analysis?
+        <input type="checkbox" id="skipAnalysisCheckbox">
+    </label>
+
+
+    <p id="test">Output (pass these values to stab.bat as `stab.bat yourInputVideo.mp4 theseValues`): </p>
+    <textarea id="output" rows="4" cols="50" readonly></textarea>
+
+    <br><br><br>
+    <label>
+        Video frame border colour (for visualisation only)
+        <input type="color" id="borderColor" value="#000" oninput="document.documentElement.style.setProperty('--border-color', this.value)">
+    </label>
+    
+
+    <footer style="padding-top: 3rem; color: gray; font-size: 0.8rem; font-style: italic;">
+        <p>Reference link to <a href="https://zznidar.github.io/tools/">all tools</a></p>
+    </footer>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const videoContainer = document.getElementById('videoContainer');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const frameOverlay = document.getElementById('frameOverlay');
+        const zoomSlider = document.getElementById('zoomSlider');
+        const zoomInput = document.getElementById('zoomInput');
+        const ratioYSlider = document.getElementById('ratioYSlider');
+        const ratioYInput = document.getElementById('ratioYInput');
+        const ratioXSlider = document.getElementById('ratioXSlider');
+        const ratioXInput = document.getElementById('ratioXInput');
+        const skipAnalysisCheckbox = document.getElementById('skipAnalysisCheckbox');
+        const output = document.getElementById('output');
+
+        let zoomValue = Number(zoomSlider.value);
+        let ratioYValue = Number(ratioYSlider.value);
+        let ratioXValue = Number(ratioXSlider.value);
+
+        function updateFrame() {
+            if (!videoPlayer.videoWidth || !videoPlayer.videoHeight || videoContainer.style.display === 'none') {
+                return;
+            }
+
+            const videoWidth = videoPlayer.clientWidth;
+            const videoHeight = videoPlayer.clientHeight;
+            const frameWidth = videoWidth / zoomValue;
+            const frameHeight = videoHeight / zoomValue;
+
+            frameOverlay.style.display = 'block';
+            frameOverlay.style.width = `${frameWidth}px`;
+            frameOverlay.style.height = `${frameHeight}px`;
+            frameOverlay.style.left = `${(videoWidth - frameWidth) * ratioXValue}px`;
+            frameOverlay.style.top = `${(videoHeight - frameHeight) * ratioYValue}px`;
+
+            output.value = `${zoomValue.toFixed(2)} ${ratioYValue.toFixed(2)} ${ratioXValue.toFixed(2)} ${skipAnalysisCheckbox.checked ? "skip" : ""}`;
+        }
+
+        function updateValue(source, input, slider) {
+            const value = Number(input.value);
+            if (!Number.isFinite(value)) {
+                return;
+            }
+
+            slider.value = value;
+            input.value = value;
+
+            if (source === 'zoom') {
+                zoomValue = value;
+            } else if (source === 'ratioY') {
+                ratioYValue = value;
+            } else if (source === 'ratioX') {
+                ratioXValue = value;
+            }
+
+            updateFrame();
+        }
+
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                videoPlayer.src = url;
+                videoContainer.style.display = 'inline-block';
+            }
+        });
+
+        window.addEventListener('resize', updateFrame);
+        videoPlayer.addEventListener('loadedmetadata', updateFrame);
+        videoPlayer.addEventListener('loadeddata', updateFrame);
+        zoomSlider.addEventListener('input', () => {
+            zoomValue = Number(zoomSlider.value);
+            zoomInput.value = zoomSlider.value;
+            updateFrame();
+        });
+        ratioYSlider.addEventListener('input', () => {
+            ratioYValue = Number(ratioYSlider.value);
+            ratioYInput.value = ratioYSlider.value;
+            updateFrame();
+        });
+        ratioXSlider.addEventListener('input', () => {
+            ratioXValue = Number(ratioXSlider.value);
+            ratioXInput.value = ratioXSlider.value;
+            updateFrame();
+        });
+        zoomInput.addEventListener('change', () => updateValue('zoom', zoomInput, zoomSlider));
+        ratioYInput.addEventListener('change', () => updateValue('ratioY', ratioYInput, ratioYSlider));
+        ratioXInput.addEventListener('change', () => updateValue('ratioX', ratioXInput, ratioXSlider));
+        skipAnalysisCheckbox.addEventListener('change', updateFrame);
+    </script>
+</body>
+</html>
