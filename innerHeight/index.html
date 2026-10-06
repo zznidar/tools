@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>get innerHeight</title>
+</head>
+<body>
+    <p>Get the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/innerHeight">innerHeight</a> of the current window.</p>
+    <p>This is a simple tool to compare your browser screen real estate across different browser versions (they tend to change "compactness" regularly, usually for the worse).</p>
+    <p>Your innerHeight is: <span id="innerHeight"></span></p>
+    <script>
+        function updateSize() {
+            document.getElementById("innerHeight").textContent = window.innerHeight;
+        }
+        updateSize();
+
+        window.addEventListener("resize", updateSize);
+    </script>
+
+    <footer style="padding-top: 3rem; color: gray; font-size: 0.8rem; font-style: italic;">
+        <p>Reference link to <a href="https://zznidar.github.io/tools/">all tools</a></p>
+    </footer>
+</body>
+</html>

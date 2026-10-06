@@ -11,3 +11,4 @@ Useful simple tools
 * [atob](https://zznidar.github.io/tools/atob): A better version of `atob()` from your browser console.
 * [collage-ppt-maker*](https://zznidar.github.io/tools/collage-ppt-maker/): Generate a collage from pictures in your PowerPoint presentation. Outputs an editable .pptx file. Based on my [video-collage-projectfile-maker](https://github.com/zznidar/video-collage-projectfile-maker/)
 * [stabbater](https://zznidar.github.io/tools/stabbater/): Visual frame selector tool for the [stab.bat](https://github.com/zznidar/Zutilities/blob/main/stab.bat) script (visualise zoom levels and positions)
+* [innerHeight](https://zznidar.github.io/tools/innerHeight): Get your browser window innerHeight to compare wasted screen space between browser versions
